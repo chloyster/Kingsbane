@@ -1,0 +1,187 @@
+import greenfoot.*;
+
+/**
+ * Write a description of class Krumm here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
+public class Krumm extends Actor
+{
+        private int speedX = 1;
+        private int speedY = 1;
+        private static final int SPEED = 2;
+        private static final int BOUNDARY = 100;
+    /**
+     * Act - do whatever the Krumm wants to do. This method is called whenever
+     * the 'Act' or 'Run' button gets pressed in the environment.
+     */
+
+
+    public void act()
+    {
+        jump();
+        //movement();
+        checkRightWall();
+        checkLeftWall();
+        platformAbove();
+        boundedMove();
+        handleKeyPresses();
+    }
+    private int ySpeed;
+    public void jump()
+    {
+        int groundLevel = getWorld().getHeight() - getImage().getHeight()/2;
+        boolean contact = false;
+        if(getY() == groundLevel)
+        {
+            contact = true;
+        }
+        Actor platform;
+        platform = getOneObjectAtOffset(0,getImage().getHeight()/2, Block.class);
+        if(platform != null)
+        {
+              contact = true;
+        }
+        if(contact != true) //not on ground (in middle of jump)
+        {
+            ySpeed++;
+            setLocation(getX(),getY()+ySpeed); //adjusts fall speed (rising slower, falling faster)
+            if(getY()>=groundLevel)
+            {
+                setLocation(getX(), groundLevel);
+                Greenfoot.getKey(); //clears keys pressed during jump
+            }
+        }
+        else
+        {
+            if("w".equals(Greenfoot.getKey()))
+            {
+                ySpeed = -15;
+                setLocation(getX(),getY() + ySpeed);
+            }
+        }
+    }
+    
+     public boolean checkLeftWall()
+     {
+         int spriteWidth = getImage().getWidth();
+         int xDistance = (int)(spriteWidth/2);
+         Actor leftWall = getOneObjectAtOffset(-xDistance, 0, Block.class);
+         if(leftWall == null)
+         {
+             return false;
+            }
+            else
+            {
+                stopByLeftWall(leftWall);
+                return true;
+            }
+        }
+        
+     public void stopByLeftWall(Actor leftWall)
+        {
+            int wallWidth = leftWall.getImage().getWidth();
+            int newX = leftWall.getX() + (wallWidth + getImage().getWidth())/2;
+            setLocation(newX + 5, getY());
+        }
+    public boolean checkRightWall()
+    {
+        int spriteWidth = getImage().getWidth();
+        int xDistance = (int)(spriteWidth/2);
+        Actor rightWall = getOneObjectAtOffset(xDistance, 0, Block.class);
+        if(rightWall == null)
+        {
+            return false;
+        }
+        else {
+            stopByRightWall(rightWall);
+            return true;
+        } 
+    }
+    
+    public void stopByRightWall(Actor rightWall)
+    {
+        int wallWidth = rightWall.getImage().getWidth();
+        int newX = rightWall.getX() - (wallWidth + getImage().getWidth())/2;
+        setLocation(newX - 5, getY());
+    }
+    
+    public void movement()
+    {
+        if(Greenfoot.isKeyDown("a"))
+        {
+            move(-3);
+        }
+        if(Greenfoot.isKeyDown("d"))
+        {
+            move(3);
+        }
+    }  
+    
+    public boolean platformAbove()
+    {
+        int spriteHeight = getImage().getHeight();
+        int yDistance = (int)(spriteHeight/-2);
+        Actor ceiling = getOneObjectAtOffset(0, yDistance, Block.class);
+        if(ceiling != null)
+        {
+            ySpeed = 1;
+            bopHead(ceiling);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+        
+    public void bopHead(Actor ceiling)
+    {
+        int ceilingHeight = ceiling.getImage().getHeight();
+        int newY = ceiling.getY() + (ceilingHeight + getImage().getHeight())/2;
+        setLocation(getX(), newY);
+    }
+    
+        private void boundedMove(){
+        if (speedX+getX() <= BOUNDARY){
+            setLocation(BOUNDARY, getY());
+            ((TesterWorld)getWorld()).shiftWorld(-speedX);
+        }
+        else if (speedX + getX() >= getWorld().getWidth() - BOUNDARY){
+            setLocation(getWorld().getWidth() - BOUNDARY, getY());
+            ((TesterWorld)getWorld()).shiftWorld(-speedX);
+        }
+        else {
+            setLocation(getX() + speedX, getY());
+        }
+        
+        if (speedY + getY() <= BOUNDARY) {
+            setLocation(getX(), BOUNDARY);
+        }
+        else if (speedY + getY() >= getWorld().getHeight() - BOUNDARY){
+            setLocation (getX(), getWorld().getHeight() - BOUNDARY);
+            ((TesterWorld)getWorld()).shiftWorld(0);
+        }
+        else {
+            setLocation (getX(), getY() + speedY);
+        }
+        
+        speedY = 0;
+        speedX = 0;
+    }
+    
+     private void handleKeyPresses(){
+        handleArrowKey("left", -SPEED, 0);
+        handleArrowKey ("right", SPEED, 0);
+       // handleArrowKey ("up", 0, -SPEED);
+        //handleArrowKey ("down", 0, SPEED);
+    }
+    
+    private void handleArrowKey(String k, int sX, int sY){
+        if (Greenfoot.isKeyDown(k)){
+            speedX = sX;
+            speedY = sY;
+        }
+    }
+}
