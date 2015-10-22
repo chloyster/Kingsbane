@@ -11,7 +11,7 @@ public class Krumm extends Actor
         private int speedX = 1;
         private int speedY = 1;
         private static final int SPEED = 2;
-        private static final int BOUNDARY = 100;
+        private static final int BOUNDARY = 300;
     /**
      * Act - do whatever the Krumm wants to do. This method is called whenever
      * the 'Act' or 'Run' button gets pressed in the environment.
@@ -144,8 +144,8 @@ public class Krumm extends Actor
     }
     
         private void boundedMove(){
-        if (speedX+getX() <= BOUNDARY){
-            setLocation(BOUNDARY, getY());
+        if (speedX+getX() <= BOUNDARY-200){
+            setLocation(BOUNDARY-200, getY());
             ((TesterWorld)getWorld()).shiftWorld(-speedX);
         }
         else if (speedX + getX() >= getWorld().getWidth() - BOUNDARY){
@@ -155,33 +155,17 @@ public class Krumm extends Actor
         else {
             setLocation(getX() + speedX, getY());
         }
-        
-        if (speedY + getY() <= BOUNDARY) {
-            setLocation(getX(), BOUNDARY);
-        }
-        else if (speedY + getY() >= getWorld().getHeight() - BOUNDARY){
-            setLocation (getX(), getWorld().getHeight() - BOUNDARY);
-            ((TesterWorld)getWorld()).shiftWorld(0);
-        }
-        else {
-            setLocation (getX(), getY() + speedY);
-        }
-        
-        speedY = 0;
         speedX = 0;
     }
     
      private void handleKeyPresses(){
-        handleArrowKey("left", -SPEED, 0);
-        handleArrowKey ("right", SPEED, 0);
-       // handleArrowKey ("up", 0, -SPEED);
-        //handleArrowKey ("down", 0, SPEED);
+        handleArrowKey("a", -SPEED);
+        handleArrowKey ("d", SPEED);
     }
     
-    private void handleArrowKey(String k, int sX, int sY){
+    private void handleArrowKey(String k, int sX){
         if (Greenfoot.isKeyDown(k)){
             speedX = sX;
-            speedY = sY;
         }
     }
 }
